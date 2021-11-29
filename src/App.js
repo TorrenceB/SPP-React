@@ -1,11 +1,12 @@
 import "./App.css";
 import SppAppBar from "./components/SppAppBar";
+import Table from "./components/SppTable";
 
 function App() {
   return (
     <div className="App">
       <SppAppBar />
-      <h1>SPP App</h1>
+      <Table />
     </div>
   );
 }
