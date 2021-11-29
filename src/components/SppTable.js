@@ -11,32 +11,44 @@ import {
 import { useTable } from "react-table";
 import React, { useMemo, useState } from "react";
 
-/* 
-      ---State---
-      - [] of data objects
-          data: {
-              itemId: "",
-              itemName: "",
-              itemQuantity: 0,
-          }
-*/
 export default function SppTable() {
-  const [data, setData] = useState([]);
+  const [itemData, setItemData] = useState([
+    {
+      itemId: "2534",
+      itemName: "Plumbers wrench",
+      itemQuanity: 2,
+      lastUpdated: "2:30pm 12.13.2021",
+    },
+    {
+      itemId: "4562",
+      itemName: "Bolt set",
+      itemQuanity: 4,
+      lastUpdated: "10:30am 12.13.2021",
+    },
+  ]);
+  const data = useMemo(() => itemData, [itemData]);
   const columns = useMemo(() => [
     {
       Header: "Item #",
-      accessor: "",
+      accessor: itemData.itemId,
     },
     {
       Header: "Name",
-      accessor: "",
+      accessor: itemData.itemName,
     },
     {
       Header: "Quantity",
-      accessor: "",
+      accessor: itemData.itemQuanity,
+    },
+    {
+      Header: "Last Updated",
+      accessor: itemData.lastUpdated,
     },
   ]);
   const tableInstance = useTable({ columns, data });
+
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    tableInstance;
 
   const styles = {
     containerStyles: {
@@ -55,7 +67,7 @@ export default function SppTable() {
   };
 
   const inputIsValid = (str) => (str.length === 0 ? false : true);
-  const onChangeHandler = () => {};
+  const onChangeHandler = (e) => {};
   const addItem = () => {};
   const updateItem = () => {};
   const deleteItem = () => {};
@@ -66,19 +78,19 @@ export default function SppTable() {
       <Container maxWidth="false" sx={styles.containerStyles}>
         <TextField
           label="Item #"
-          value={""}
+          value={itemData.itemId}
           required
           sx={styles.textFieldStyles}
         />
         <TextField
           label="Name"
-          value={""}
+          value={itemData.itemName}
           required
           sx={styles.textFieldStyles}
         />
         <TextField
           label="Quantity"
-          value={""}
+          value={itemData.itemQuanity}
           required
           sx={styles.textFieldStyles}
         />
@@ -94,12 +106,29 @@ export default function SppTable() {
       </Container>
 
       {/* Table... */}
-      <Table>
+      <Table {...getTableProps()}>
         <TableHead>
-          <TableRow></TableRow>
+          {headerGroups.map((headerGroup) => {
+            return (
+              <TableRow {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => {
+                  return (
+                    <TableCell {...column.getHeaderProps()}>
+                      {column.render("Header")}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
         </TableHead>
         <TableBody>
-          <TableCell></TableCell>
+          <TableRow>
+            <TableCell>37245</TableCell>
+            <TableCell>Plumber's Wrench</TableCell>
+            <TableCell>2</TableCell>
+            <TableCell>2:30pm 12.12.2021</TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     </div>
