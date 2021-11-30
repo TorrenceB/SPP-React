@@ -20,7 +20,7 @@ export default function SppTable() {
       itemId: "2534",
       itemName: "Plumbers wrench",
       itemQuanity: 2,
-      lastUpdated: "2:30pm 12.13.2021",
+      lastUpdated: Date.now(),
     },
     {
       itemId: "4562",
@@ -34,19 +34,19 @@ export default function SppTable() {
     () => [
       {
         Header: "Item #",
-        accessor: itemData.itemId,
+        accessor: (row) => row.itemId,
       },
       {
         Header: "Name",
-        accessor: itemData.itemName,
+        accessor: (row) => row.itemName,
       },
       {
         Header: "Quantity",
-        accessor: itemData.itemQuanity,
+        accessor: (row) => row.itemQuanity,
       },
       {
         Header: "Last Updated",
-        accessor: itemData.lastUpdated,
+        accessor: (row) => row.lastUpdated,
       },
     ],
     []
@@ -149,5 +149,25 @@ export default function SppTable() {
           Item Name
           Quantity
           Last Updated (Timestamp)
+
+    Todo: 
+      1. Create mockData.js and pull into component state
+      2. Refactor, break table and form into separate 
+        component and assign props to each
+      3. Timestamp for each object needs to be Date.now() or something...
+      4. Simple field validation if str === "" don't submit...
+      5. Add function --> Add an object to itemData array
+      6. Update function --> Update object property in itemData array
+      7. Delete function --> Delete object from array
+      8. onRecordSelect function...
+      9. doesRecordExist function --> if !itemData[itemId], add record else update existing record
+        w/ newly entered data. Maybe add prompt? Record already exists, update?
+      10. Clean up, style components
+
+      Notes: 
+        - Clicking on a record in the table should load the record details to the Input form for editing
+
+        - Only one record may exist for each Item Number – if an existing Item Number is entered, 
+          it should update the existing data for that Item Number.
   */
 }
