@@ -11,7 +11,10 @@ import {
 import { useTable } from "react-table";
 import React, { useMemo, useState } from "react";
 
+import styles from "../assets/styles/styles";
+
 export default function SppTable() {
+  const { containerStyles, textFieldStyles, buttonStyles } = styles();
   const [itemData, setItemData] = useState([
     {
       itemId: "2534",
@@ -27,44 +30,31 @@ export default function SppTable() {
     },
   ]);
   const data = useMemo(() => itemData, [itemData]);
-  const columns = useMemo(() => [
-    {
-      Header: "Item #",
-      accessor: itemData.itemId,
-    },
-    {
-      Header: "Name",
-      accessor: itemData.itemName,
-    },
-    {
-      Header: "Quantity",
-      accessor: itemData.itemQuanity,
-    },
-    {
-      Header: "Last Updated",
-      accessor: itemData.lastUpdated,
-    },
-  ]);
+  const columns = useMemo(
+    () => [
+      {
+        Header: "Item #",
+        accessor: itemData.itemId,
+      },
+      {
+        Header: "Name",
+        accessor: itemData.itemName,
+      },
+      {
+        Header: "Quantity",
+        accessor: itemData.itemQuanity,
+      },
+      {
+        Header: "Last Updated",
+        accessor: itemData.lastUpdated,
+      },
+    ],
+    []
+  );
   const tableInstance = useTable({ columns, data });
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
-
-  const styles = {
-    containerStyles: {
-      display: "flex",
-      justifyContent: "space-between",
-      my: 2,
-    },
-    textFieldStyles: {
-      mx: 1,
-    },
-    buttonStyles: {
-      mx: 1,
-      px: 8,
-      width: 2,
-    },
-  };
 
   const inputIsValid = (str) => (str.length === 0 ? false : true);
   const onChangeHandler = (e) => {};
@@ -75,32 +65,32 @@ export default function SppTable() {
   return (
     <div className="table-wrapper">
       {/* Wrapper */}
-      <Container maxWidth="false" sx={styles.containerStyles}>
+      <Container maxWidth="false" sx={containerStyles}>
         <TextField
           label="Item #"
           value={itemData.itemId}
           required
-          sx={styles.textFieldStyles}
+          sx={textFieldStyles}
         />
         <TextField
           label="Name"
           value={itemData.itemName}
           required
-          sx={styles.textFieldStyles}
+          sx={textFieldStyles}
         />
         <TextField
           label="Quantity"
           value={itemData.itemQuanity}
           required
-          sx={styles.textFieldStyles}
+          sx={textFieldStyles}
         />
-        <Button variant="contained" sx={styles.buttonStyles}>
+        <Button variant="contained" sx={buttonStyles}>
           Add
         </Button>
-        <Button color="warning" variant="outlined" sx={styles.buttonStyles}>
+        <Button color="warning" variant="outlined" sx={buttonStyles}>
           Edit
         </Button>
-        <Button color="error" variant="contained" sx={styles.buttonStyles}>
+        <Button color="error" variant="contained" sx={buttonStyles}>
           Delete
         </Button>
       </Container>
@@ -122,13 +112,21 @@ export default function SppTable() {
             );
           })}
         </TableHead>
-        <TableBody>
-          <TableRow>
-            <TableCell>37245</TableCell>
-            <TableCell>Plumber's Wrench</TableCell>
-            <TableCell>2</TableCell>
-            <TableCell>2:30pm 12.12.2021</TableCell>
-          </TableRow>
+        <TableBody {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row);
+            return (
+              <TableRow {...row.getRowProps()}>
+                {row.cells.map((cell) => {
+                  return (
+                    <TableCell {...cell.getCellProps()}>
+                      {cell.render("Cell")}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>
