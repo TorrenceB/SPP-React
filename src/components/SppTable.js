@@ -9,14 +9,17 @@ import {
   TableCell,
 } from "@mui/material";
 import { useTable } from "react-table";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 
 import styles from "../assets/styles/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function SppTable() {
   const { containerStyles, textFieldStyles, buttonStyles } = styles();
-  const [isEditing, setIsEditing] = useState(false);
+  const [updatingItem, setUpdatingItem] = useState({
+    isUpdating: false,
+    index: null,
+  });
   const [userInput, setUserInput] = useState({
     itemId: "",
     itemName: "",
@@ -58,6 +61,11 @@ export default function SppTable() {
     ],
     []
   );
+
+  useEffect(() => {
+    console.log(itemData);
+  }, [itemData]);
+
   const tableInstance = useTable({ columns, data });
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
@@ -81,7 +89,6 @@ export default function SppTable() {
       itemName: itemName ?? "",
       itemQuanity: itemQuanity ?? "-",
       lastUpdated: Date(),
-      isEditing: false,
     };
     setItemData((prevState) => [...prevState, newItem]);
 
@@ -89,11 +96,31 @@ export default function SppTable() {
   };
 
   /* 
-    1. Get id of selected row
-    2. Set userInput {} = selectedRow {}
+    1. Get index of item selected and find in itemData arr;
+    2. Create updated item. 
+    3. Replace previous item in state arr with newState.
+      (Make copy of prev arr and pass new object into index) 
   */
+  const updateItem = ({ itemId, itemName, itemQuanity }, { index }) => {
+    const updatingItemIndex = index;
+    const updatedItem = {
+      itemId,
+      itemName,
+      itemQuanity,
+      lastUpdated: Date(),
+    };
 
-  const updateItem = () => {};
+    setItemData(() =>
+      itemData.map((item, currIndex) =>
+        currIndex === updatingItemIndex ? updatedItem : item
+      )
+    );
+
+    setUpdatingItem({ isUpdating: false, index: null });
+
+    setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
+  };
+
   const deleteItem = () => {};
 
   return (
@@ -124,8 +151,13 @@ export default function SppTable() {
           sx={textFieldStyles}
           onChange={onChangeHandler}
         />
-        {isEditing ? (
-          <Button color="warning" variant="outlined" sx={buttonStyles}>
+        {updatingItem.isUpdating ? (
+          <Button
+            color="warning"
+            variant="outlined"
+            sx={buttonStyles}
+            onClick={() => updateItem(userInput, updatingItem)}
+          >
             Edit
           </Button>
         ) : (
@@ -166,7 +198,10 @@ export default function SppTable() {
               <TableRow
                 {...row.getRowProps()}
                 onClick={() => {
-                  setIsEditing(true);
+                  setUpdatingItem({
+                    isUpdating: true,
+                    index: row.index,
+                  });
                   setUserInput({ ...row.original });
                 }}
               >
