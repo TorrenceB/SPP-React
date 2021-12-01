@@ -12,13 +12,15 @@ import { useTable } from "react-table";
 import React, { useMemo, useState } from "react";
 
 import styles from "../assets/styles/styles";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function SppTable() {
   const { containerStyles, textFieldStyles, buttonStyles } = styles();
+  const [isEditing, setIsEditing] = useState(false);
   const [userInput, setUserInput] = useState({
     itemId: "",
     itemName: "",
-    itemQuanity: "",
+    itemQuanity: 0,
   });
   const [itemData, setItemData] = useState([
     {
@@ -61,7 +63,7 @@ export default function SppTable() {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const inputIsValid = (str) => (str.length === 0 ? false : true);
+  const isInputValid = (str) => (str.length === 0 ? false : true);
 
   const onChangeHandler = (e) => {
     const value = e.target.value;
@@ -77,14 +79,19 @@ export default function SppTable() {
     const newItem = {
       itemId: itemId ?? "",
       itemName: itemName ?? "",
-      itemQuanity: itemQuanity ?? "",
+      itemQuanity: itemQuanity ?? "-",
       lastUpdated: Date(),
+      isEditing: false,
     };
-
     setItemData((prevState) => [...prevState, newItem]);
 
     setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
   };
+
+  /* 
+    1. Get id of selected row
+    2. Set userInput {} = selectedRow {}
+  */
 
   const updateItem = () => {};
   const deleteItem = () => {};
@@ -117,19 +124,22 @@ export default function SppTable() {
           sx={textFieldStyles}
           onChange={onChangeHandler}
         />
-        <Button
-          variant="contained"
-          sx={buttonStyles}
-          onClick={() => addItem(userInput)}
-        >
-          Add
-        </Button>
-        <Button color="warning" variant="outlined" sx={buttonStyles}>
-          Edit
-        </Button>
-        <Button color="error" variant="contained" sx={buttonStyles}>
+        {isEditing ? (
+          <Button color="warning" variant="outlined" sx={buttonStyles}>
+            Edit
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            sx={buttonStyles}
+            onClick={() => addItem(userInput)}
+          >
+            Add
+          </Button>
+        )}
+        {/* <Button color="error" variant="contained" sx={buttonStyles}>
           Delete
-        </Button>
+        </Button> */}
       </Container>
 
       {/* Table... */}
@@ -153,7 +163,13 @@ export default function SppTable() {
           {rows.map((row) => {
             prepareRow(row);
             return (
-              <TableRow {...row.getRowProps()} onClick={() => console.log(row)}>
+              <TableRow
+                {...row.getRowProps()}
+                onClick={() => {
+                  setIsEditing(true);
+                  setUserInput({ ...row.original });
+                }}
+              >
                 {row.cells.map((cell) => {
                   return (
                     <TableCell {...cell.getCellProps()}>
@@ -193,7 +209,7 @@ export default function SppTable() {
         component and assign props to each
       3. Timestamp for each object needs to be Date.now() or something...
       4. Simple field validation if str === "" don't submit...
-      5. Add function --> Add an object to itemData array
+    * 5. Add function --> Add an object to itemData array
       6. Update function --> Update object property in itemData array
       7. Delete function --> Delete object from array
       8. onRecordSelect function...
