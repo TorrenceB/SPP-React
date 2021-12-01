@@ -85,9 +85,9 @@ export default function SppTable() {
 
   const addItem = ({ itemId, itemName, itemQuanity }) => {
     const newItem = {
-      itemId: itemId ?? "",
-      itemName: itemName ?? "",
-      itemQuanity: itemQuanity ?? "-",
+      itemId,
+      itemName,
+      itemQuanity,
       lastUpdated: Date(),
     };
     setItemData((prevState) => [...prevState, newItem]);
@@ -95,12 +95,6 @@ export default function SppTable() {
     setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
   };
 
-  /* 
-    1. Get index of item selected and find in itemData arr;
-    2. Create updated item. 
-    3. Replace previous item in state arr with newState.
-      (Make copy of prev arr and pass new object into index) 
-  */
   const updateItem = ({ itemId, itemName, itemQuanity }, { index }) => {
     const updatingItemIndex = index;
     const updatedItem = {
