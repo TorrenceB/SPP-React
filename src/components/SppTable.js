@@ -15,18 +15,23 @@ import styles from "../assets/styles/styles";
 
 export default function SppTable() {
   const { containerStyles, textFieldStyles, buttonStyles } = styles();
+  const [userInput, setUserInput] = useState({
+    itemId: "",
+    itemName: "",
+    itemQuanity: "",
+  });
   const [itemData, setItemData] = useState([
     {
       itemId: "2534",
       itemName: "Plumbers wrench",
       itemQuanity: 2,
-      lastUpdated: Date.now(),
+      lastUpdated: Date(),
     },
     {
       itemId: "4562",
       itemName: "Bolt set",
       itemQuanity: 4,
-      lastUpdated: "10:30am 12.13.2021",
+      lastUpdated: Date(),
     },
   ]);
   const data = useMemo(() => itemData, [itemData]);
@@ -57,7 +62,18 @@ export default function SppTable() {
     tableInstance;
 
   const inputIsValid = (str) => (str.length === 0 ? false : true);
-  const onChangeHandler = (e) => {};
+
+  const onChangeHandler = (e) => {
+    const value = e.target.value;
+    const nameAttr = e.target.name;
+
+    setUserInput((state) => ({
+      ...state,
+      [nameAttr]: value,
+    }));
+
+    console.log(userInput);
+  };
   const addItem = () => {};
   const updateItem = () => {};
   const deleteItem = () => {};
@@ -68,21 +84,27 @@ export default function SppTable() {
       <Container maxWidth="false" sx={containerStyles}>
         <TextField
           label="Item #"
-          value={itemData.itemId}
+          value={userInput.itemId}
+          name="itemId"
           required
           sx={textFieldStyles}
+          onChange={onChangeHandler}
         />
         <TextField
           label="Name"
-          value={itemData.itemName}
+          value={userInput.itemName}
+          name="itemName"
           required
           sx={textFieldStyles}
+          onChange={onChangeHandler}
         />
         <TextField
           label="Quantity"
-          value={itemData.itemQuanity}
+          value={userInput.itemQuanity}
+          name="itemQuanity"
           required
           sx={textFieldStyles}
+          onChange={onChangeHandler}
         />
         <Button variant="contained" sx={buttonStyles}>
           Add
