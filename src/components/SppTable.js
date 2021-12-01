@@ -71,10 +71,26 @@ export default function SppTable() {
       ...state,
       [nameAttr]: value,
     }));
-
-    console.log(userInput);
   };
-  const addItem = () => {};
+
+  /* 
+    Create newItem object
+    - setItemData w/ new Object
+      pass in function, spread 
+      prevArr and append new Item
+      to end of arr
+  */
+  const addItem = ({ itemId, itemName, itemQuanity }) => {
+    const newItem = {
+      itemId: itemId ?? "",
+      itemName: itemName ?? "",
+      itemQuanity: itemQuanity ?? "",
+      lastUpdated: Date(),
+    };
+
+    setItemData((prevState) => [...prevState, newItem]);
+  };
+
   const updateItem = () => {};
   const deleteItem = () => {};
 
@@ -106,7 +122,11 @@ export default function SppTable() {
           sx={textFieldStyles}
           onChange={onChangeHandler}
         />
-        <Button variant="contained" sx={buttonStyles}>
+        <Button
+          variant="contained"
+          sx={buttonStyles}
+          onClick={() => addItem(userInput)}
+        >
           Add
         </Button>
         <Button color="warning" variant="outlined" sx={buttonStyles}>
