@@ -20,11 +20,13 @@ export default function SppTable() {
     isUpdating: false,
     index: null,
   });
+
   const [userInput, setUserInput] = useState({
     itemId: "",
     itemName: "",
     itemQuanity: 0,
   });
+
   const [itemData, setItemData] = useState([
     {
       itemId: "2534",
@@ -115,7 +117,9 @@ export default function SppTable() {
     setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
   };
 
-  const deleteItem = () => {};
+  const deleteItem = (id) => {
+    setItemData(() => itemData.filter((item) => item.itemId !== id));
+  };
 
   return (
     <div className="table-wrapper">
@@ -163,9 +167,6 @@ export default function SppTable() {
             Add
           </Button>
         )}
-        {/* <Button color="error" variant="contained" sx={buttonStyles}>
-          Delete
-        </Button> */}
       </Container>
 
       {/* Table... */}
