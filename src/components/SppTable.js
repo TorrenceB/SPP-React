@@ -73,13 +73,6 @@ export default function SppTable() {
     }));
   };
 
-  /* 
-    Create newItem object
-    - setItemData w/ new Object
-      pass in function, spread 
-      prevArr and append new Item
-      to end of arr
-  */
   const addItem = ({ itemId, itemName, itemQuanity }) => {
     const newItem = {
       itemId: itemId ?? "",
@@ -89,6 +82,8 @@ export default function SppTable() {
     };
 
     setItemData((prevState) => [...prevState, newItem]);
+
+    setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
   };
 
   const updateItem = () => {};
@@ -158,7 +153,7 @@ export default function SppTable() {
           {rows.map((row) => {
             prepareRow(row);
             return (
-              <TableRow {...row.getRowProps()}>
+              <TableRow {...row.getRowProps()} onClick={() => console.log(row)}>
                 {row.cells.map((cell) => {
                   return (
                     <TableCell {...cell.getCellProps()}>
