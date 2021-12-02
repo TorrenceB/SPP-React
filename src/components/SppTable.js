@@ -7,6 +7,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  IconButton,
 } from "@mui/material";
 import { useTable } from "react-table";
 import React, { useMemo, useState, useEffect } from "react";
@@ -41,24 +42,44 @@ export default function SppTable() {
       lastUpdated: Date(),
     },
   ]);
+  const deleteItem = (index) => {
+    /* Todo: Optimize this method */
+    const newItemArr = [...itemData];
+    newItemArr.splice(index, 1);
+
+    setItemData(newItemArr);
+  };
+
   const data = useMemo(() => itemData, [itemData]);
   const columns = useMemo(
     () => [
       {
         Header: "Item #",
+        id: "itemID",
         accessor: (row) => row.itemId,
       },
       {
         Header: "Name",
+        id: "itemName",
         accessor: (row) => row.itemName,
       },
       {
         Header: "Quantity",
+        id: "itemQuanity",
         accessor: (row) => row.itemQuanity,
       },
       {
         Header: "Last Updated",
+        id: "lastUpdated",
         accessor: (row) => row.lastUpdated,
+        // Todo: use Cell prop to format date here.
+      },
+      {
+        Header: "Delete",
+        id: "delete",
+        accessor: (str) => "delete",
+        /* Todo: Prevent cell click event from bubbling up to row */
+        Cell: (row) => <DeleteIcon onClick={() => deleteItem(row.row.index)} />,
       },
     ],
     []
@@ -115,10 +136,6 @@ export default function SppTable() {
     setUpdatingItem({ isUpdating: false, index: null });
 
     setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
-  };
-
-  const deleteItem = (id) => {
-    setItemData(() => itemData.filter((item) => item.itemId !== id));
   };
 
   return (
@@ -201,6 +218,7 @@ export default function SppTable() {
                 }}
               >
                 {row.cells.map((cell) => {
+                  // console.log(row);
                   return (
                     <TableCell {...cell.getCellProps()}>
                       {cell.render("Cell")}
