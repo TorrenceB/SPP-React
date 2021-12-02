@@ -7,7 +7,6 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  IconButton,
 } from "@mui/material";
 import { useTable } from "react-table";
 import React, { useMemo, useState, useEffect } from "react";
@@ -79,7 +78,18 @@ export default function SppTable() {
         id: "delete",
         accessor: (str) => "delete",
         /* Todo: Prevent cell click event from bubbling up to row */
-        Cell: (row) => <DeleteIcon onClick={() => deleteItem(row.row.index)} />,
+        Cell: (row) => (
+          <DeleteIcon
+            onClick={(e) => {
+              deleteItem(row.row.index);
+              /* 
+                Prevent event from bubbling up to  
+                row click handler
+              */
+              e.stopPropagation();
+            }}
+          />
+        ),
       },
     ],
     []
@@ -218,7 +228,6 @@ export default function SppTable() {
                 }}
               >
                 {row.cells.map((cell) => {
-                  // console.log(row);
                   return (
                     <TableCell {...cell.getCellProps()}>
                       {cell.render("Cell")}
