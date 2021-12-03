@@ -10,9 +10,9 @@ import {
 } from "@mui/material";
 import { useTable } from "react-table";
 import React, { useMemo, useState, useEffect } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import styles from "../assets/styles/styles";
-import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function SppTable() {
   const { containerStyles, textFieldStyles, buttonStyles } = styles();
@@ -27,27 +27,9 @@ export default function SppTable() {
     itemQuanity: 0,
   });
 
-  const [itemData, setItemData] = useState([
-    {
-      itemId: "2534",
-      itemName: "Plumbers wrench",
-      itemQuanity: 2,
-      lastUpdated: Date(),
-    },
-    {
-      itemId: "4562",
-      itemName: "Bolt set",
-      itemQuanity: 4,
-      lastUpdated: Date(),
-    },
-  ]);
-  const deleteItem = (index) => {
-    /* Todo: Optimize this method */
-    const newItemArr = [...itemData];
-    newItemArr.splice(index, 1);
-
-    setItemData(newItemArr);
-  };
+  const [itemData, setItemData] = useState([]);
+  const deleteItem = (id) =>
+    setItemData((prevState) => prevState.filter((item) => item.itemId !== id));
 
   const data = useMemo(() => itemData, [itemData]);
   const columns = useMemo(
@@ -71,20 +53,21 @@ export default function SppTable() {
         Header: "Last Updated",
         id: "lastUpdated",
         accessor: (row) => row.lastUpdated,
+        Cell: () => new Date().toLocaleString("en-US"),
         // Todo: use Cell prop to format date here.
       },
       {
         Header: "Delete",
         id: "delete",
-        accessor: (str) => "delete",
-        /* Todo: Prevent cell click event from bubbling up to row */
+        accessor: () => "delete",
         Cell: (row) => (
           <DeleteIcon
+            color="error"
             onClick={(e) => {
-              deleteItem(row.row.index);
+              deleteItem(row.row.original.itemId);
               /* 
                 Prevent event from bubbling up to  
-                row click handler
+                row click handler.
               */
               e.stopPropagation();
             }}
@@ -104,7 +87,7 @@ export default function SppTable() {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const isInputValid = (str) => (str.length === 0 ? false : true);
+  const inputIsValid = (str) => (str.length === 0 ? false : true);
 
   const onChangeHandler = (e) => {
     const value = e.target.value;
@@ -123,9 +106,12 @@ export default function SppTable() {
       itemQuanity,
       lastUpdated: Date(),
     };
-    setItemData((prevState) => [...prevState, newItem]);
 
-    setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
+    if (inputIsValid) {
+      setItemData((prevState) => [...prevState, newItem]);
+
+      setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
+    }
   };
 
   const updateItem = ({ itemId, itemName, itemQuanity }, { index }) => {
