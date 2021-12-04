@@ -24,7 +24,7 @@ export default function SppTable() {
   const [userInput, setUserInput] = useState({
     itemId: "",
     itemName: "",
-    itemQuanity: 0,
+    itemQuanity: "",
   });
 
   const [itemData, setItemData] = useState([]);
@@ -91,8 +91,6 @@ export default function SppTable() {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const inputIsValid = (str) => (str.length === 0 ? false : true);
-
   const onChangeHandler = (e) => {
     const value = e.target.value;
     const nameAttr = e.target.name;
@@ -103,6 +101,12 @@ export default function SppTable() {
     }));
   };
 
+  const itemExists = (items, { itemId }) => {
+    const index = items.findIndex((item) => item.itemId === itemId);
+
+    return index === -1 ? false : true;
+  };
+
   const addItem = ({ itemId, itemName, itemQuanity }) => {
     const newItem = {
       itemId,
@@ -111,11 +115,9 @@ export default function SppTable() {
       lastUpdated: Date(),
     };
 
-    if (inputIsValid(userInput)) {
-      setItemData((prevState) => [...prevState, newItem]);
+    setItemData((prevState) => [...prevState, newItem]);
 
-      setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
-    }
+    setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
   };
 
   const updateItem = ({ itemId, itemName, itemQuanity }, { index }) => {
@@ -138,11 +140,14 @@ export default function SppTable() {
     setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
   };
 
+  const validateInput = (str) => (str === "" ? true : false);
+
   return (
     <div className="table-wrapper">
       {/* Wrapper */}
       <Container maxWidth="false" sx={containerStyles}>
         <TextField
+          error={validateInput(userInput.itemId)}
           label="Item #"
           value={userInput.itemId}
           name="itemId"
@@ -151,6 +156,7 @@ export default function SppTable() {
           onChange={onChangeHandler}
         />
         <TextField
+          error={validateInput(userInput.itemName)}
           label="Name"
           value={userInput.itemName}
           name="itemName"
@@ -159,6 +165,7 @@ export default function SppTable() {
           onChange={onChangeHandler}
         />
         <TextField
+          error={validateInput(userInput.itemQuanity)}
           label="Quantity"
           value={userInput.itemQuanity}
           name="itemQuanity"
@@ -179,7 +186,15 @@ export default function SppTable() {
           <Button
             variant="contained"
             sx={buttonStyles}
-            onClick={() => addItem(userInput)}
+            onClick={() => {
+              if (itemExists(itemData, userInput)) {
+                /* 
+                  Handle update record index
+                */
+              } else {
+                addItem(userInput);
+              }
+            }}
           >
             Add
           </Button>
@@ -234,32 +249,11 @@ export default function SppTable() {
 }
 
 {
-  /* Row w/ data entry form
-      - Fields:
-          Item # (string)
-          Item name (string)
-          Item Qty (int)
-      - Buttons:
-          Add - Add function
-          Update - update function
-          Delete - delete function
-    ReactTable
-      - Columns:
-          Item #
-          Item Name
-          Quantity
-          Last Updated (Timestamp)
-
-    Todo: 
-      1. Create mockData.js and pull into component state
+  /* 
+    Todo:       
       2. Refactor, break table and form into separate 
         component and assign props to each
-      3. Timestamp for each object needs to be Date.now() or something...
       4. Simple field validation if str === "" don't submit...
-    * 5. Add function --> Add an object to itemData array
-      6. Update function --> Update object property in itemData array
-      7. Delete function --> Delete object from array
-      8. onRecordSelect function...
       9. doesRecordExist function --> if !itemData[itemId], add record else update existing record
         w/ newly entered data. Maybe add prompt? Record already exists, update?
       10. Clean up, style components
@@ -269,5 +263,5 @@ export default function SppTable() {
 
         - Only one record may exist for each Item Number – if an existing Item Number is entered, 
           it should update the existing data for that Item Number.
-  */
+*/
 }
