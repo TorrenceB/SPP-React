@@ -52,23 +52,27 @@ export default function SppTable() {
       {
         Header: "Last Updated",
         id: "lastUpdated",
-        accessor: (row) => row.lastUpdated,
-        Cell: () => new Date().toLocaleString("en-US"),
-        // Todo: use Cell prop to format date here.
+        accessor: (row) =>
+          new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          }).format(new Date(row.lastUpdated)),
       },
       {
         Header: "Delete",
         id: "delete",
-        accessor: () => "delete",
-        Cell: (row) => (
+        accessor: ({ itemId }) => (
           <DeleteIcon
             color="error"
             onClick={(e) => {
-              deleteItem(row.row.original.itemId);
-              /* 
-                Prevent event from bubbling up to  
-                row click handler.
-              */
+              deleteItem(itemId);
+              /*
+              Prevent event from bubbling up to
+              row click handler.
+            */
               e.stopPropagation();
             }}
           />
@@ -107,7 +111,7 @@ export default function SppTable() {
       lastUpdated: Date(),
     };
 
-    if (inputIsValid) {
+    if (inputIsValid(userInput)) {
       setItemData((prevState) => [...prevState, newItem]);
 
       setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
