@@ -112,8 +112,6 @@ export default function SppTable() {
       ...state,
       [nameAttr]: value,
     }));
-
-    validateInput(userInput, setErrorState);
   };
 
   const findDuplicateId = (items, { itemId }) =>
@@ -162,11 +160,13 @@ export default function SppTable() {
             variant="outlined"
             sx={buttonStyles}
             onClick={() => {
-              const index = findDuplicateId(itemData, userInput);
+              if (validateInput(userInput, setErrorState)) {
+                const index = findDuplicateId(itemData, userInput);
 
-              return index === -1
-                ? updateItem(userInput, updatingItem)
-                : updateItem(userInput, { index });
+                return index === -1
+                  ? updateItem(userInput, updatingItem)
+                  : updateItem(userInput, { index });
+              }
             }}
           >
             <EditIcon />
@@ -195,7 +195,7 @@ export default function SppTable() {
         sx={containerStyles}
         style={{ paddingLeft: 0 }}
       >
-        <form>
+        <form noValidate autoComplete="false">
           <TextField
             type="number"
             error={errorState.itemIdError}
