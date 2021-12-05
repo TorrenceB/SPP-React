@@ -5,17 +5,34 @@ import {
   Table,
   TableHead,
   TableBody,
+  TableFooter,
   TableRow,
   TableCell,
 } from "@mui/material";
 import { useTable } from "react-table";
 import React, { useMemo, useState, useEffect } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
 
 import styles from "../assets/styles/styles";
+import validateInput from "../util/validate";
 
 export default function SppTable() {
-  const { containerStyles, textFieldStyles, buttonStyles } = styles();
+  const {
+    containerStyles,
+    textFieldStyles,
+    buttonStyles,
+    tableStyles,
+    wrapperStyles,
+    headerStyles,
+    tableRowStyles,
+  } = styles();
+  const [errorState, setErrorState] = useState({
+    itemIdError: false,
+    itemNameError: false,
+    itemQuanityError: false,
+  });
   const [updatingItem, setUpdatingItem] = useState({
     isUpdating: false,
     index: null,
@@ -36,7 +53,7 @@ export default function SppTable() {
     () => [
       {
         Header: "Item #",
-        id: "itemID",
+        id: "itemId",
         accessor: (row) => row.itemId,
       },
       {
@@ -82,10 +99,6 @@ export default function SppTable() {
     []
   );
 
-  useEffect(() => {
-    console.log(itemData);
-  }, [itemData]);
-
   const tableInstance = useTable({ columns, data });
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
@@ -99,6 +112,8 @@ export default function SppTable() {
       ...state,
       [nameAttr]: value,
     }));
+
+    validateInput(userInput, setErrorState);
   };
 
   const findDuplicateId = (items, { itemId }) =>
@@ -137,41 +152,10 @@ export default function SppTable() {
     setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
   };
 
-  const validateInput = (str) => (str === "" ? true : false);
-
   return (
-    <div className="table-wrapper">
-      {/* Wrapper */}
-      <Container maxWidth="false" sx={containerStyles}>
-        <form>
-          <TextField
-            // error={validateInput(userInput.itemId)}
-            label="Item #"
-            value={userInput.itemId}
-            name="itemId"
-            required
-            sx={textFieldStyles}
-            onChange={onChangeHandler}
-          />
-          <TextField
-            // error={validateInput(userInput.itemName)}
-            label="Name"
-            value={userInput.itemName}
-            name="itemName"
-            required
-            sx={textFieldStyles}
-            onChange={onChangeHandler}
-          />
-          <TextField
-            // error={validateInput(userInput.itemQuanity)}
-            label="Quantity"
-            value={userInput.itemQuanity}
-            name="itemQuanity"
-            required
-            sx={textFieldStyles}
-            onChange={onChangeHandler}
-          />
-        </form>
+    <div className="table-wrapper" style={wrapperStyles}>
+      <div style={headerStyles}>
+        <h2>Enter Item</h2>
         {updatingItem.isUpdating ? (
           <Button
             color="warning"
@@ -185,34 +169,86 @@ export default function SppTable() {
                 : updateItem(userInput, { index });
             }}
           >
-            Edit
+            <EditIcon />
+            <h4>Edit</h4>
           </Button>
         ) : (
           <Button
             variant="contained"
             sx={buttonStyles}
             onClick={() => {
-              const index = findDuplicateId(itemData, userInput);
-
-              return index === -1
-                ? addItem(userInput)
-                : updateItem(userInput, { index });
+              if (validateInput(userInput, setErrorState)) {
+                const index = findDuplicateId(itemData, userInput);
+                return index === -1
+                  ? addItem(userInput)
+                  : updateItem(userInput, { index });
+              }
             }}
           >
-            Add
+            <AddIcon style={{ marginRight: 5 }} />
+            <h4>Add</h4>
           </Button>
         )}
+      </div>
+      <Container
+        maxWidth="false"
+        sx={containerStyles}
+        style={{ paddingLeft: 0 }}
+      >
+        <form>
+          <TextField
+            type="number"
+            error={errorState.itemIdError}
+            label="Item #"
+            helperText={
+              errorState.itemIdError ? "Please enter item number" : null
+            }
+            value={userInput.itemId}
+            name="itemId"
+            required
+            sx={textFieldStyles}
+            onChange={onChangeHandler}
+          />
+          <TextField
+            error={errorState.itemNameError}
+            label="Name"
+            helperText={
+              errorState.itemNameError ? "Please enter item name" : null
+            }
+            value={userInput.itemName}
+            name="itemName"
+            required
+            sx={textFieldStyles}
+            onChange={onChangeHandler}
+          />
+          <TextField
+            type="number"
+            error={errorState.itemQuanityError}
+            label="Quantity"
+            helperText={
+              errorState.itemQuanityError ? "Please enter item quanity" : null
+            }
+            value={userInput.itemQuanity}
+            name="itemQuanity"
+            required
+            sx={textFieldStyles}
+            onChange={onChangeHandler}
+          />
+        </form>
       </Container>
 
       {/* Table... */}
-      <Table {...getTableProps()}>
-        <TableHead>
+      <Table {...getTableProps()} style={tableStyles}>
+        <TableHead style={{ backgroundColor: "#ECECEC" }}>
           {headerGroups.map((headerGroup) => {
             return (
-              <TableRow {...headerGroup.getHeaderGroupProps()}>
+              <TableRow
+                {...headerGroup.getHeaderGroupProps()}
+                style={tableRowStyles}
+              >
                 {headerGroup.headers.map((column) => {
                   return (
-                    <TableCell {...column.getHeaderProps()}>
+                    <TableCell {...column.getHeaderProps()} align="left">
                       {column.render("Header")}
                     </TableCell>
                   );
@@ -226,6 +262,7 @@ export default function SppTable() {
             prepareRow(row);
             return (
               <TableRow
+                hover
                 {...row.getRowProps()}
                 onClick={() => {
                   setUpdatingItem({
@@ -234,10 +271,15 @@ export default function SppTable() {
                   });
                   setUserInput({ ...row.original });
                 }}
+                style={
+                  row.id % 2 === 0
+                    ? { backgroundColor: "#FFF" }
+                    : { backgroundColor: "#ECECEC" }
+                }
               >
                 {row.cells.map((cell) => {
                   return (
-                    <TableCell {...cell.getCellProps()}>
+                    <TableCell {...cell.getCellProps()} align="left">
                       {cell.render("Cell")}
                     </TableCell>
                   );
@@ -246,6 +288,7 @@ export default function SppTable() {
             );
           })}
         </TableBody>
+        <TableFooter></TableFooter>
       </Table>
     </div>
   );
