@@ -10,7 +10,7 @@ import {
   TableCell,
 } from "@mui/material";
 import { useTable } from "react-table";
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -292,22 +292,4 @@ export default function SppTable() {
       </Table>
     </div>
   );
-}
-
-{
-  /* 
-    Todo:       
-      2. Refactor, break table and form into separate 
-        component and assign props to each
-      4. Simple field validation if str === "" don't submit...
-      9. doesRecordExist function --> if !itemData[itemId], add record else update existing record
-        w/ newly entered data. Maybe add prompt? Record already exists, update?
-      10. Clean up, style components
-
-      Notes: 
-        - Clicking on a record in the table should load the record details to the Input form for editing
-
-        - Only one record may exist for each Item Number – if an existing Item Number is entered, 
-          it should update the existing data for that Item Number.
-*/
 }
