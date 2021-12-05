@@ -105,7 +105,7 @@ export default function SppTable() {
     tableInstance;
 
   const onChangeHandler = (e) => {
-    const value = e.target.value;
+    const value = e.target.value < 0 ? 0 : e.target.value;
     const nameAttr = e.target.name;
 
     setUserInput((state) => ({
