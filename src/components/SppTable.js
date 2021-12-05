@@ -16,7 +16,7 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 
 import styles from "../assets/styles/styles";
-import validateInput from "../util/validate";
+import inputIsValid from "../util/validate";
 
 export default function SppTable() {
   const {
@@ -160,7 +160,7 @@ export default function SppTable() {
             variant="outlined"
             sx={buttonStyles}
             onClick={() => {
-              if (validateInput(userInput, setErrorState)) {
+              if (inputIsValid(userInput, setErrorState)) {
                 const index = findDuplicateId(itemData, userInput);
 
                 return index === -1
@@ -177,7 +177,7 @@ export default function SppTable() {
             variant="contained"
             sx={buttonStyles}
             onClick={() => {
-              if (validateInput(userInput, setErrorState)) {
+              if (inputIsValid(userInput, setErrorState)) {
                 const index = findDuplicateId(itemData, userInput);
                 return index === -1
                   ? addItem(userInput)

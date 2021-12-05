@@ -1,4 +1,4 @@
-const validateInput = ({ itemId, itemName, itemQuanity }, setErrorState) => {
+const inputIsValid = ({ itemId, itemName, itemQuanity }, setErrorState) => {
   let isValid = false;
 
   setErrorState(() => ({
@@ -26,4 +26,4 @@ const validateInput = ({ itemId, itemName, itemQuanity }, setErrorState) => {
   return isValid;
 };
 
-export default validateInput;
+export default inputIsValid;
