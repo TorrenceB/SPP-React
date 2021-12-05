@@ -101,11 +101,8 @@ export default function SppTable() {
     }));
   };
 
-  const itemExists = (items, { itemId }) => {
-    const index = items.findIndex((item) => item.itemId === itemId);
-
-    return index === -1 ? false : true;
-  };
+  const findDuplicateId = (items, { itemId }) =>
+    items.findIndex((item) => item.itemId === itemId);
 
   const addItem = ({ itemId, itemName, itemQuanity }) => {
     const newItem = {
@@ -135,7 +132,7 @@ export default function SppTable() {
       )
     );
 
-    setUpdatingItem({ isUpdating: false, index: null });
+    setUpdatingItem(() => ({ isUpdating: false, index: null }));
 
     setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
   };
@@ -146,39 +143,47 @@ export default function SppTable() {
     <div className="table-wrapper">
       {/* Wrapper */}
       <Container maxWidth="false" sx={containerStyles}>
-        <TextField
-          error={validateInput(userInput.itemId)}
-          label="Item #"
-          value={userInput.itemId}
-          name="itemId"
-          required
-          sx={textFieldStyles}
-          onChange={onChangeHandler}
-        />
-        <TextField
-          error={validateInput(userInput.itemName)}
-          label="Name"
-          value={userInput.itemName}
-          name="itemName"
-          required
-          sx={textFieldStyles}
-          onChange={onChangeHandler}
-        />
-        <TextField
-          error={validateInput(userInput.itemQuanity)}
-          label="Quantity"
-          value={userInput.itemQuanity}
-          name="itemQuanity"
-          required
-          sx={textFieldStyles}
-          onChange={onChangeHandler}
-        />
+        <form>
+          <TextField
+            // error={validateInput(userInput.itemId)}
+            label="Item #"
+            value={userInput.itemId}
+            name="itemId"
+            required
+            sx={textFieldStyles}
+            onChange={onChangeHandler}
+          />
+          <TextField
+            // error={validateInput(userInput.itemName)}
+            label="Name"
+            value={userInput.itemName}
+            name="itemName"
+            required
+            sx={textFieldStyles}
+            onChange={onChangeHandler}
+          />
+          <TextField
+            // error={validateInput(userInput.itemQuanity)}
+            label="Quantity"
+            value={userInput.itemQuanity}
+            name="itemQuanity"
+            required
+            sx={textFieldStyles}
+            onChange={onChangeHandler}
+          />
+        </form>
         {updatingItem.isUpdating ? (
           <Button
             color="warning"
             variant="outlined"
             sx={buttonStyles}
-            onClick={() => updateItem(userInput, updatingItem)}
+            onClick={() => {
+              const index = findDuplicateId(itemData, userInput);
+
+              return index === -1
+                ? updateItem(userInput, updatingItem)
+                : updateItem(userInput, { index });
+            }}
           >
             Edit
           </Button>
@@ -187,13 +192,11 @@ export default function SppTable() {
             variant="contained"
             sx={buttonStyles}
             onClick={() => {
-              if (itemExists(itemData, userInput)) {
-                /* 
-                  Handle update record index
-                */
-              } else {
-                addItem(userInput);
-              }
+              const index = findDuplicateId(itemData, userInput);
+
+              return index === -1
+                ? addItem(userInput)
+                : updateItem(userInput, { index });
             }}
           >
             Add
