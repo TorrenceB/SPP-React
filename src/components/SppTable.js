@@ -11,12 +11,14 @@ import {
 } from "@mui/material";
 import { useTable } from "react-table";
 import React, { useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 
 import styles from "../assets/styles/styles";
 import inputIsValid from "../util/validate";
+import { addItem } from "../store/actions";
 
 export default function SppTable() {
   const {
@@ -43,12 +45,14 @@ export default function SppTable() {
     itemName: "",
     itemQuanity: "",
   });
+  const dispatch = useDispatch();
+  const items = useSelector((state) => state.items);
 
   const [itemData, setItemData] = useState([]);
   const deleteItem = (id) =>
     setItemData((prevState) => prevState.filter((item) => item.itemId !== id));
 
-  const data = useMemo(() => itemData, [itemData]);
+  const data = useMemo(() => items, [items]);
   const columns = useMemo(
     () => [
       {
@@ -117,18 +121,18 @@ export default function SppTable() {
   const findDuplicateId = (items, { itemId }) =>
     items.findIndex((item) => item.itemId === itemId);
 
-  const addItem = ({ itemId, itemName, itemQuanity }) => {
-    const newItem = {
-      itemId,
-      itemName,
-      itemQuanity,
-      lastUpdated: Date(),
-    };
+  // const addItem = ({ itemId, itemName, itemQuanity }) => {
+  //   const newItem = {
+  //     itemId,
+  //     itemName,
+  //     itemQuanity,
+  //     lastUpdated: Date(),
+  //   };
 
-    setItemData((prevState) => [...prevState, newItem]);
+  //   setItemData((prevState) => [...prevState, newItem]);
 
-    setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
-  };
+  //   setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
+  // };
 
   const updateItem = ({ itemId, itemName, itemQuanity }, { index }) => {
     const updatingItemIndex = index;
@@ -180,7 +184,7 @@ export default function SppTable() {
               if (inputIsValid(userInput, setErrorState)) {
                 const index = findDuplicateId(itemData, userInput);
                 return index === -1
-                  ? addItem(userInput)
+                  ? dispatch(addItem(userInput))
                   : updateItem(userInput, { index });
               }
             }}

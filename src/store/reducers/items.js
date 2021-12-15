@@ -1,11 +1,7 @@
-const itemState = [];
-
-export const itemsReducer = (state = itemState, action) => {
+export const itemsReducer = (state = [], action) => {
   switch (action.type) {
-    case "addItems":
-      return {
-        ...state,
-      };
+    case "addItem":
+      return [...state, action.payload];
     default:
       return state;
   }

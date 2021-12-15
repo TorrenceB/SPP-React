@@ -5,7 +5,7 @@ import App from "./App";
 import appTheme from "./assets/themes/app-theme";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { Provider } from "react-redux";
-import { store } from "./store";
+import store from "./store";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -15,7 +15,6 @@ ReactDOM.render(
         <App />
       </ThemeProvider>
     </React.StrictMode>
-    ,
   </Provider>,
   document.getElementById("root")
 );
