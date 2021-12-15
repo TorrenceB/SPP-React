@@ -1,3 +1,12 @@
 const itemState = [];
 
-const itemsReducer = (state = itemState, action) => {};
+export const itemsReducer = (state = itemState, action) => {
+  switch (action.type) {
+    case "addItems":
+      return {
+        ...state,
+      };
+    default:
+      return state;
+  }
+};

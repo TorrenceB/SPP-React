@@ -1,3 +1,3 @@
 export const addItem = () => ({
-  type: "items/addItems",
+  type: "addItems",
 });
