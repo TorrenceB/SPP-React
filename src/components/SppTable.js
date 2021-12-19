@@ -18,7 +18,7 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import styles from "../assets/styles/styles";
 import inputIsValid from "../util/validate";
-import { addItem } from "../store/actions";
+import { addItem, deleteItem } from "../store/actions";
 
 export default function SppTable() {
   const {
@@ -30,6 +30,7 @@ export default function SppTable() {
     headerStyles,
     tableRowStyles,
   } = styles();
+
   const [errorState, setErrorState] = useState({
     itemIdError: false,
     itemNameError: false,
@@ -49,8 +50,8 @@ export default function SppTable() {
   const items = useSelector((state) => state.items);
 
   const [itemData, setItemData] = useState([]);
-  const deleteItem = (id) =>
-    setItemData((prevState) => prevState.filter((item) => item.itemId !== id));
+  // const deleteItem = (id) =>
+  //   setItemData((prevState) => prevState.filter((item) => item.itemId !== id));
 
   const data = useMemo(() => items, [items]);
   const columns = useMemo(
@@ -89,7 +90,8 @@ export default function SppTable() {
           <DeleteIcon
             color="error"
             onClick={(e) => {
-              deleteItem(itemId);
+              console.log(itemId);
+              dispatch(deleteItem(itemId));
               /*
               Prevent event from bubbling up to
               row click handler.
