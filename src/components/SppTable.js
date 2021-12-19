@@ -18,7 +18,7 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import styles from "../assets/styles/styles";
 import inputIsValid from "../util/validate";
-import { addItem, deleteItem } from "../store/actions";
+import { addItem, deleteItem, updateItem } from "../store/actions";
 
 export default function SppTable() {
   const {
@@ -48,10 +48,6 @@ export default function SppTable() {
   });
   const dispatch = useDispatch();
   const items = useSelector((state) => state.items);
-
-  const [itemData, setItemData] = useState([]);
-  // const deleteItem = (id) =>
-  //   setItemData((prevState) => prevState.filter((item) => item.itemId !== id));
 
   const data = useMemo(() => items, [items]);
   const columns = useMemo(
@@ -90,7 +86,6 @@ export default function SppTable() {
           <DeleteIcon
             color="error"
             onClick={(e) => {
-              console.log(itemId);
               dispatch(deleteItem(itemId));
               /*
               Prevent event from bubbling up to
@@ -123,39 +118,6 @@ export default function SppTable() {
   const findDuplicateId = (items, { itemId }) =>
     items.findIndex((item) => item.itemId === itemId);
 
-  // const addItem = ({ itemId, itemName, itemQuanity }) => {
-  //   const newItem = {
-  //     itemId,
-  //     itemName,
-  //     itemQuanity,
-  //     lastUpdated: Date(),
-  //   };
-
-  //   setItemData((prevState) => [...prevState, newItem]);
-
-  //   setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
-  // };
-
-  const updateItem = ({ itemId, itemName, itemQuanity }, { index }) => {
-    const updatingItemIndex = index;
-    const updatedItem = {
-      itemId,
-      itemName,
-      itemQuanity,
-      lastUpdated: Date(),
-    };
-
-    setItemData(() =>
-      itemData.map((item, currIndex) =>
-        currIndex === updatingItemIndex ? updatedItem : item
-      )
-    );
-
-    setUpdatingItem(() => ({ isUpdating: false, index: null }));
-
-    setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
-  };
-
   return (
     <div className="table-wrapper" style={wrapperStyles}>
       <div style={headerStyles}>
@@ -167,11 +129,19 @@ export default function SppTable() {
             sx={buttonStyles}
             onClick={() => {
               if (inputIsValid(userInput, setErrorState)) {
-                const index = findDuplicateId(itemData, userInput);
+                const index = findDuplicateId(items, userInput);
 
-                return index === -1
-                  ? updateItem(userInput, updatingItem)
-                  : updateItem(userInput, { index });
+                if (index === -1) {
+                  dispatch(updateItem(userInput, updatingItem));
+
+                  setUpdatingItem({ isUpdating: false, index: null });
+                  setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
+                } else {
+                  dispatch(updateItem(userInput, { index }));
+
+                  setUpdatingItem({ isUpdating: false, index: null });
+                  setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
+                }
               }
             }}
           >
@@ -184,10 +154,18 @@ export default function SppTable() {
             sx={buttonStyles}
             onClick={() => {
               if (inputIsValid(userInput, setErrorState)) {
-                const index = findDuplicateId(itemData, userInput);
-                return index === -1
-                  ? dispatch(addItem(userInput))
-                  : updateItem(userInput, { index });
+                const index = findDuplicateId(items, userInput);
+
+                if (index === -1) {
+                  dispatch(addItem(userInput));
+
+                  setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
+                } else {
+                  dispatch(updateItem(userInput, { index }));
+
+                  setUpdatingItem({ isUpdating: false, index: null });
+                  setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
+                }
               }
             }}
           >

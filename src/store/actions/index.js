@@ -8,9 +8,17 @@ const addItem = ({ itemId, itemName, itemQuanity }) => ({
   },
 });
 
-const updateItem = () => ({
+const updateItem = ({ itemId, itemName, itemQuanity }, { index }) => ({
   type: "updateItem",
-  payload: {},
+  payload: {
+    index,
+    updatedItem: {
+      itemId,
+      itemName,
+      itemQuanity,
+      lastUpdated: new Date(),
+    },
+  },
 });
 
 const deleteItem = (id) => ({
@@ -18,4 +26,4 @@ const deleteItem = (id) => ({
   type: "deleteItem",
 });
 
-export { addItem, deleteItem };
+export { addItem, deleteItem, updateItem };
