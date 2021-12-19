@@ -115,6 +115,24 @@ export default function SppTable() {
     }));
   };
 
+  const clickHandler = (dispatchAction) => {
+    if (inputIsValid(userInput, setErrorState)) {
+      const index = findDuplicateId(items, userInput);
+
+      if (index === -1) {
+        dispatch(dispatchAction);
+
+        setUpdatingItem({ isUpdating: false, index: null });
+        setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
+      } else {
+        dispatch(updateItem(userInput, { index }));
+
+        setUpdatingItem({ isUpdating: false, index: null });
+        setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
+      }
+    }
+  };
+
   const findDuplicateId = (items, { itemId }) =>
     items.findIndex((item) => item.itemId === itemId);
 
@@ -127,23 +145,7 @@ export default function SppTable() {
             color="warning"
             variant="outlined"
             sx={buttonStyles}
-            onClick={() => {
-              if (inputIsValid(userInput, setErrorState)) {
-                const index = findDuplicateId(items, userInput);
-
-                if (index === -1) {
-                  dispatch(updateItem(userInput, updatingItem));
-
-                  setUpdatingItem({ isUpdating: false, index: null });
-                  setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
-                } else {
-                  dispatch(updateItem(userInput, { index }));
-
-                  setUpdatingItem({ isUpdating: false, index: null });
-                  setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
-                }
-              }
-            }}
+            onClick={() => clickHandler(updateItem(userInput, updatingItem))}
           >
             <EditIcon />
             <h4>Edit</h4>
@@ -152,22 +154,7 @@ export default function SppTable() {
           <Button
             variant="contained"
             sx={buttonStyles}
-            onClick={() => {
-              if (inputIsValid(userInput, setErrorState)) {
-                const index = findDuplicateId(items, userInput);
-
-                if (index === -1) {
-                  dispatch(addItem(userInput));
-
-                  setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
-                } else {
-                  dispatch(updateItem(userInput, { index }));
-
-                  setUpdatingItem({ isUpdating: false, index: null });
-                  setUserInput({ itemId: "", itemName: "", itemQuanity: "" });
-                }
-              }
-            }}
+            onClick={() => clickHandler(addItem(userInput))}
           >
             <AddIcon style={{ marginRight: 5 }} />
             <h4>Add</h4>
