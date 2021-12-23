@@ -114,6 +114,8 @@ export default function SppTable() {
       [nameAttr]: value,
     }));
   };
+  const findDuplicateId = (items, { itemId }) =>
+    items.findIndex((item) => item.itemId === itemId);
 
   const clickHandler = (dispatchAction) => {
     if (inputIsValid(userInput, setErrorState)) {
@@ -132,9 +134,6 @@ export default function SppTable() {
       }
     }
   };
-
-  const findDuplicateId = (items, { itemId }) =>
-    items.findIndex((item) => item.itemId === itemId);
 
   return (
     <div className="table-wrapper" style={wrapperStyles}>
